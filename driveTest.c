@@ -12,7 +12,6 @@
 typedef enum {strength, speed} type;
 type gearType = strength;
 
-
 const int joystickThresh = 30;
 
 int Rdrive;
@@ -37,18 +36,23 @@ task main()
 {
 	while(true)
 	{
-		if (abs(mapJoystick(vexRT(Ch4))) )
+		if (mapJoystick(vexRT(ch3)) > 0)
 		{
-		Rdrive = abs(mapJoystick(vexRT(Ch3)));
-		Ldrive = abs(mapJoystick(vexRT(Ch3)));
-		}
+			Rdrive = abs(mapJoystick(vexRT(ch4))) - abs(mapJoystick(vexRT(ch3)));
+			Ldrive = abs(mapJoystick(vexRT(ch4))) + abs(mapJoystick(vexRT(ch3)));
+		}//end of if
 		else
 		{
-			Rdrive = abs(mapJoystick(vexRT(Ch3))) + abs(mapJoystick(vexRT(Ch4)));
-		}
+			Rdrive = abs(mapJoystick(vexRT(ch4))) + abs(mapJoystick(vexRT(ch3)));
+			Ldrive = abs(mapJoystick(vexRT(ch4))) - abs(mapJoystick(vexRT(ch3)));
+		}//end of else
+		
 		motor[Rfront] = Rdrive;
 		motor[Rback] = Rdrive;
 		motor[Rmid] = Rdrive;
+		motor[Lfront] = Ldrive;
+		motor[Lback] = Ldrive;
+		motor[Lmid] = Ldrive;
 
 		SensorValue[transmission] = gearType;
 
