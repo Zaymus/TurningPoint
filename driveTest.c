@@ -17,12 +17,6 @@
 typedef enum {strength, speed} type;
 type gearType = speed;
 
-float mainBattery = nImmediateBatteryLevel;
-float backupBattery = BackupBatteryLevel;
-string last_called_task = "main";
-bool oppintakepiston;
-bool opppuncherpiston;
-
 task driveControl()
 {
 	int rightSpeed;
@@ -114,10 +108,13 @@ task puncher()
 	}
 }
 
-task control()
+task main()
 {
-	while (true)
+	while(true)
 	{
+		startTask(driveControl);
+		
+		
 		SensorValue[transmission] = gearType;
 		
 		if (vexRT(Btn5U) == true)
@@ -140,9 +137,6 @@ task control()
 
 		if (vexRT(Btn8R) == true)
 		{
-		/*	oppintakepiston = !SensorValue[intakeAngler];
-			SensorValue[intakeAngler] = oppintakepiston;*/
-			
 			SensorValue[puncherAngler] = !SensorValue[puncherAngler];
 		}//end of if
 
@@ -160,26 +154,13 @@ task control()
 
 		if(vexRT(Btn6U) == true)
 		{
-			last_called_task = "puncher";
 			startTask(puncher);
 		}//end of if
 
 		if (vexRT(Btn8U) == true)
 		{
-			/*opppuncherpiston = !SensorValue[puncherAngler];
-			SensorValue[puncherAngler] = opppuncherpiston;*/
-			
 			SensorValue[puncherAngler] = !SensorValue[puncherAngler];
 		}//end of if
-		//wait1Msec(10);
-	}//end of while
-}//end of task control
 
-task main()
-{
-	while(true)
-	{
-		startTask(driveControl);
-		startTask(control);
 	}//end of while
 }//end of main
