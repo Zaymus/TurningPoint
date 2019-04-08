@@ -26,42 +26,12 @@ task driveControl()
 
 	while(true)
 	{
-		if (vexRT(Ch3) > joystickThresh || vexRT(Ch3) < -joystickThresh)
-		{
-			if (vexRT(Ch4) > joystickThresh)
-			{
-				leftSpeed  = sqrt((vexRT(Ch3) * vexRT(Ch3)) + (vexRT(Ch4) * vexRT(Ch4)));
-				rightSpeed = sqrt((vexRT(Ch3) * vexRT(Ch3)) - (vexRT(Ch4) * vexRT(Ch4)));
-			}//end of if
 
-			else if (vexRT(Ch4) < -joystickThresh)
-			{
-				leftSpeed  = sqrt((vexRT(Ch3) * vexRT(Ch3)) - (vexRT(Ch4) * vexRT(Ch4)));
-				rightSpeed = sqrt((vexRT(Ch3) * vexRT(Ch3)) + (vexRT(Ch4) * vexRT(Ch4)));
-			}//end of else if
-
-			else
-			{
-				leftSpeed  = vexRT(Ch3);
-				rightSpeed = vexRT(Ch3);
-			}//end of else
-		}//end of if
-		else if(vexRT(Ch4) > joystickThresh)
+		if (vexRT(Ch3) + vexRT(Ch4) >= 30 || vexRT(Ch3) - vexRT(Ch4) <= 30)
 		{
-			leftSpeed  = vexRT(Ch4)  / 3;
-			rightSpeed = -vexRT(Ch4) / 3;
-		}//end of else if
-
-		else if(vexRT(Ch4) < -joystickThresh)
-		{
-			leftSpeed  = -vexRT(Ch4) / 3;
-			rightSpeed = vexRT(Ch4)  / 3;
-		}//end of if
-		else
-		{
-			leftSpeed = 0;
-			rightSpeed = 0;
-		}//end of else
+			leftSpeed = vexRT(Ch3) + vexRT(Ch4);
+			rightSpeed = vexRT(Ch3) - vexRT(Ch4);
+		}
 
 		motor[rightFront] = rightSpeed;
 		motor[rightMid] = rightSpeed;
@@ -70,7 +40,7 @@ task driveControl()
 		motor[leftMid] = leftSpeed;
 		motor[leftBack] = leftSpeed;
 
-		wait1Msec(15);
+		wait1Msec(20);
 	}//end of while
 }//end of driveControl task
 
@@ -120,6 +90,8 @@ task puncher()
 			motor[puncherMotor1] = 127;
 			motor[puncherMotor2] = 127;
 			delay(50);
+			motor[puncherMotor1] = 0;
+			motor[puncherMotor2] = 0;
 			stage = 3;
 			break;
 
