@@ -74,30 +74,52 @@ task driveControl()
 	}//end of while
 }//end of driveControl task
 
+bool ballLoaded()
+{
+	const int ballThresh = 200;
+	if (SensorValue[ballDetector] <= ballThresh)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 task puncher()
 {
 	int stage = 0;
-	const int ballThresh = 200;
+	clearTimer(T1);
 	while(true)
 	{
 		switch(stage)
 		{
 		case 0:
-			if (SensorValue[ballDetector] <= ballThresh)
+			motor[puncherMotor1] = 127;
+			motor[punchermotor2] = 127;
+			if (timer1[T1] >= 400)
+			{
+				motor[puncherMotor1] = 50;
+				motor[punchermotor2] = 50;
+			}
+			break;
+		case 1:
+			if (ballLoaded())
 			{
 				clearTimer(T1);
-				stage = 1;
+				stage = 2;
 			}//end of if
 			else
 			{
-				stage = 2;
+				stage = 3;
 			}
 			break;
 
-		case 1:
+		case 2:
 			motor[puncherMotor1] = 127;
 			motor[puncherMotor2] = 127;
-			delay(500);
+			delay(50);
 			stage = 3;
 			break;
 
@@ -107,6 +129,8 @@ task puncher()
 		}
 	}
 }
+
+task()
 
 task main()
 {
