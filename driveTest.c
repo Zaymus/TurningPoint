@@ -17,6 +17,17 @@
 typedef enum {strength, speed} type;
 type gearType = speed;
 
+void queueShot()
+{
+	motor[puncherMotor1] = 127;
+	motor[puncherMotor2] = 127;
+	if (time1[T1] >= 400)
+	{
+		motor[puncherMotor1] = 50;
+		motor[puncherMotor2] = 50;
+	}//end of if
+}//end of queueShot
+
 task driveControl()
 {
 	int rightSpeed;
@@ -26,12 +37,40 @@ task driveControl()
 
 	while(true)
 	{
-
-		if (vexRT(Ch3) + vexRT(Ch4) >= 30 || vexRT(Ch3) - vexRT(Ch4) <= 30)
+		if (vexRT(Ch3) + vexRT(Ch4) >= joystickThresh || vexRT(Ch3) - vexRT(Ch4) <= -joystickThresh)
 		{
-			leftSpeed = vexRT(Ch3) + vexRT(Ch4);
-			rightSpeed = vexRT(Ch3) - vexRT(Ch4);
-		}
+			if (vexRT(Ch3) >= 30 || vexRT(Ch3) <= -joystickThresh)
+			{
+				if (vexRT(Ch4) >= 30 || vexRT(Ch4) <= -joystickThresh)
+				{
+					leftSpeed = vexRT(Ch3) + vexRT(Ch4);
+					rightSpeed = vexRT(Ch3) - vexRT(Ch4);
+				}//end of if
+				else
+				{
+					leftSpeed = vexRT(Ch3);
+					rightSpeed = vexRT(Ch3);
+				}//end of else
+			}//end of if
+			else if (vexRT(Ch4) >= joystickThresh || vexRT(Ch4) <= -joystickThresh)
+			{
+				if (vexRT(Ch4) >= joystickThresh)
+				{
+					leftSpeed = vexRT(Ch4) / 3;
+					rightSpeed = -vexRT(Ch4) / 3;
+				}//end of if
+				else
+				{
+					leftSpeed = -vexRT(Ch4) / 3;
+					rightSpeed = vexRT(Ch4) / 3;
+				}//end of else
+			}//end of else if
+		}//end of if
+		else
+		{
+			leftSpeed = 0;
+			rightSpeed = 0;
+		}//end of else
 
 		motor[rightFront] = rightSpeed;
 		motor[rightMid] = rightSpeed;
@@ -50,12 +89,12 @@ bool ballLoaded()
 	if (SensorValue[ballDetector] <= ballThresh)
 	{
 		return true;
-	}
+	}//end of if
 	else
 	{
 		return false;
-	}
-}
+	}//end of else
+}//end of ballLoadded
 
 task puncher()
 {
@@ -66,13 +105,7 @@ task puncher()
 		switch(stage)
 		{
 		case 0:
-			motor[puncherMotor1] = 127;
-			motor[punchermotor2] = 127;
-			if (timer1[T1] >= 400)
-			{
-				motor[puncherMotor1] = 50;
-				motor[punchermotor2] = 50;
-			}
+			queueShot();
 			break;
 		case 1:
 			if (ballLoaded())
@@ -102,17 +135,15 @@ task puncher()
 	}
 }
 
-task()
-
 task main()
 {
 	while(true)
 	{
 		startTask(driveControl);
-		
-		
+
+
 		SensorValue[transmission] = gearType;
-		
+
 		if (vexRT(Btn5U) == true)
 		{
 			motor[intake] = 127;
@@ -157,6 +188,5 @@ task main()
 		{
 			SensorValue[puncherAngler] = !SensorValue[puncherAngler];
 		}//end of if
-
 	}//end of while
 }//end of main
